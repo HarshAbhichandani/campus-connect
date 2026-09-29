@@ -1,4 +1,6 @@
+
 require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const axios = require('axios');
@@ -9,17 +11,22 @@ const PORT = process.env.PORT || process.env.GATEWAY_PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// Configuration-Based Service Registry (Service Discovery Layer)
-// Reads service locations from environment variables at startup / runtime
+// Configuration-based service discovery
 const getServiceRegistry = () => ({
-  'user-service': process.env.USER_SERVICE_URL || 'http://localhost:3001',
-  'product-service': process.env.PRODUCT_SERVICE_URL || 'http://localhost:3002',
-  'order-service': process.env.ORDER_SERVICE_URL || 'http://localhost:3003'
+  'user-service':
+    process.env.USER_SERVICE_URL || 'http://localhost:3001',
+
+  'product-service':
+    process.env.PRODUCT_SERVICE_URL || 'http://localhost:3002',
+
+  'order-service':
+    process.env.ORDER_SERVICE_URL || 'http://localhost:3003'
 });
 
-// Gateway Health Check Endpoint
+// Gateway health check
 app.get('/health', (req, res) => {
   const registry = getServiceRegistry();
+
   res.status(200).json({
     status: 'UP',
     service: 'api-gateway',
@@ -33,63 +40,127 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Generic Reverse Proxy Handler with Request Logging and Centralized 502/503 Error Handling
+// Generic reverse proxy
 const proxyToService = (serviceName) => {
   return async (req, res) => {
     const startTime = Date.now();
+
     const registry = getServiceRegistry();
     const targetBaseUrl = registry[serviceName];
 
     if (!targetBaseUrl) {
-      console.error(`[API Gateway] Error: No configuration found for service '${serviceName}'`);
+      console.error(
+        `[API Gateway] Missing configuration for ${serviceName}`
+      );
+
       return res.status(500).json({
         error: 'Gateway Configuration Error',
-        message: `Service '${serviceName}' location is not defined in gateway configuration.`
+        message: `Service '${serviceName}' is not configured.`
       });
     }
 
-    const targetUrl = `${targetBaseUrl}${req.originalUrl}`;
+    // Remove trailing slashes to avoid double slashes
+    const baseUrl = targetBaseUrl.replace(/\/+$/, '');
 
-    
-try {
-  const headers = { ...req.headers };
+    // Preserve the original route and query parameters
+    const targetUrl = `${baseUrl}${req.originalUrl}`;
 
-  delete headers.host;
-  delete headers["content-length"];
-  delete headers["transfer-encoding"];
+    try {
+      // Copy incoming headers
+      const headers = { ...req.headers };
 
-  const response = await axios({
-    method: req.method,
-    url: targetUrl,
-    data: ["POST", "PUT", "PATCH"].includes(req.method)
-      ? req.body
-      : undefined,
-    headers: {
-      ...headers,
-      "Content-Type": "application/json"
-    },
-    validateStatus: () => true,
-    timeout: 10000
-  });
+      // Remove headers that must be generated for
+      // the new upstream HTTP request
+      delete headers.host;
+      delete headers['content-length'];
+      delete headers['transfer-encoding'];
+      delete headers.connection;
+
+      // Only forward request bodies for methods that use them
+      const hasBody = ['POST', 'PUT', 'PATCH'].includes(
+        req.method.toUpperCase()
+      );
+
+      // Avoid unnecessary Content-Type on GET requests
+      if (!hasBody) {
+        delete headers['content-type'];
+      }
+
+      console.log(
+        `[API Gateway] Forwarding ${req.method} ` +
+        `${req.originalUrl} -> ${targetUrl}`
+      );
+
+      const response = await axios({
+        method: req.method,
+        url: targetUrl,
+        headers,
+        data: hasBody ? req.body : undefined,
+
+        // Allow sleeping Render services time to start
+        timeout: 60000,
+
+        // Return upstream HTTP responses instead of
+        // automatically throwing for 4xx/5xx statuses
+        validateStatus: () => true
+      });
 
       const duration = Date.now() - startTime;
-      console.log(`[API Gateway Log] ${req.method} ${req.originalUrl} -> ${serviceName} (${targetUrl}) | Status: ${response.status} | Time: ${duration}ms`);
 
+      console.log(
+        `[API Gateway Log] ${req.method} ${req.originalUrl} ` +
+        `-> ${serviceName} (${targetUrl}) | ` +
+        `Status: ${response.status} | Time: ${duration}ms`
+      );
+
+      // Log the actual upstream response when it fails
+      if (response.status >= 400) {
+        console.error('[Gateway Upstream Error]', {
+          service: serviceName,
+          targetUrl,
+          status: response.status,
+          contentType: response.headers['content-type'],
+          responseBody: response.data
+        });
+      }
+
+      // Forward the upstream response content type
       if (response.headers['content-type']) {
-        res.setHeader('content-type', response.headers['content-type']);
+        res.setHeader(
+          'content-type',
+          response.headers['content-type']
+        );
       }
 
       return res.status(response.status).send(response.data);
+
     } catch (err) {
       const duration = Date.now() - startTime;
-      console.error(`[API Gateway Log] ${req.method} ${req.originalUrl} -> ${serviceName} UNREACHABLE | Time: ${duration}ms | Error: ${err.message}`);
 
-      return res.status(502).json({
-        error: 'Bad Gateway',
-        message: `Target service '${serviceName}' at '${targetBaseUrl}' is unreachable or refused connection.`,
+      console.error('[Gateway Connection Error]', {
+        method: req.method,
+        route: req.originalUrl,
         service: serviceName,
-        targetUrl: targetUrl,
-        statusCode: 502,
+        targetUrl,
+        duration: `${duration}ms`,
+        message: err.message,
+        code: err.code,
+        status: err.response?.status,
+        responseBody: err.response?.data
+      });
+
+      // Distinguish timeout from other connection failures
+      const isTimeout =
+        err.code === 'ECONNABORTED' ||
+        err.code === 'ETIMEDOUT';
+
+      return res.status(isTimeout ? 504 : 502).json({
+        error: isTimeout ? 'Gateway Timeout' : 'Bad Gateway',
+        message: isTimeout
+          ? `Service '${serviceName}' did not respond in time.`
+          : `Unable to communicate with '${serviceName}'.`,
+        service: serviceName,
+        statusCode: isTimeout ? 504 : 502,
         details: err.message,
         timestamp: new Date().toISOString()
       });
@@ -97,26 +168,32 @@ try {
   };
 };
 
-// Route Mapping (Configured via Service Registry)
+// Route mapping
 app.use('/users', proxyToService('user-service'));
+
 app.use('/products', proxyToService('product-service'));
+
 app.use('/orders', proxyToService('order-service'));
 
-// Fallback route for unknown paths
+// Fallback for unknown routes
 app.use((req, res) => {
   res.status(404).json({
     error: 'Not Found',
-    message: `No route handler found on API Gateway for path '${req.originalUrl}'. Available routes: /users, /products, /orders, /health`
+    message:
+      `No route handler found for '${req.originalUrl}'. ` +
+      'Available routes: /users, /products, /orders, /health'
   });
 });
 
+// Start API Gateway
 app.listen(PORT, '0.0.0.0', () => {
   const registry = getServiceRegistry();
-  console.log(`=======================================================`);
+
+  console.log('==========================================');
   console.log(`[API Gateway] Running on port ${PORT}`);
-  console.log(`[API Gateway] Configured Service Registry:`);
-  console.log(`   - User Service   (/users)    -> ${registry['user-service']}`);
-  console.log(`   - Product Service (/products) -> ${registry['product-service']}`);
-  console.log(`   - Order Service   (/orders)   -> ${registry['order-service']}`);
-  console.log(`=======================================================`);
+  console.log('[API Gateway] Service Registry:');
+  console.log(`User: ${registry['user-service']}`);
+  console.log(`Product: ${registry['product-service']}`);
+  console.log(`Order: ${registry['order-service']}`);
+  console.log('==========================================');
 });
