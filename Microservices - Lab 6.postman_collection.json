@@ -1,0 +1,358 @@
+{
+  "info": {
+    "_postman_id": "lab6-microservices-collection-id",
+    "name": "Microservices - Lab 6",
+    "description": "Postman Collection for Web Services & SOA Lab 6: Microservices Architecture with User, Product, and Order Services.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "User Service",
+      "item": [
+        {
+          "name": "GET All Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3001/users",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3001",
+              "path": ["users"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET User by ID (101)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3001/users/101",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3001",
+              "path": ["users", "101"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"103\",\n  \"name\": \"Alice Johnson\",\n  \"email\": \"alice@campus.edu\",\n  \"role\": \"Student\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3001/users",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3001",
+              "path": ["users"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Update User (101)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Johnathan Doe\",\n  \"email\": \"johnathan@campus.edu\",\n  \"role\": \"Senior Student\"\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3001/users/101",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3001",
+              "path": ["users", "101"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE User (103)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3001/users/103",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3001",
+              "path": ["users", "103"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET User Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3001/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3001",
+              "path": ["health"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Product Service",
+      "item": [
+        {
+          "name": "GET All Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3002/products",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3002",
+              "path": ["products"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Product by ID (501)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3002/products/501",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3002",
+              "path": ["products", "501"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"503\",\n  \"name\": \"Wireless Mouse\",\n  \"price\": 29.99,\n  \"category\": \"Electronics\",\n  \"stock\": 75\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3002/products",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3002",
+              "path": ["products"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PUT Update Product (501)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Premium Campus Hoodie\",\n  \"price\": 54.99,\n  \"stock\": 120\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3002/products/501",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3002",
+              "path": ["products", "501"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE Product (503)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3002/products/503",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3002",
+              "path": ["products", "503"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Product Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3002/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3002",
+              "path": ["health"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Order Service",
+      "item": [
+        {
+          "name": "GET All Orders",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3003/orders",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3003",
+              "path": ["orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Order by ID (901)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3003/orders/901",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3003",
+              "path": ["orders", "901"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Create Order (Valid Inter-Service Call)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"101\",\n  \"productId\": \"501\",\n  \"quantity\": 2\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3003/orders",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3003",
+              "path": ["orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Create Order - Invalid User ID (404 Test)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"999\",\n  \"productId\": \"501\",\n  \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3003/orders",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3003",
+              "path": ["orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "POST Create Order - Invalid Product ID (404 Test)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"101\",\n  \"productId\": \"999\",\n  \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "http://localhost:3003/orders",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3003",
+              "path": ["orders"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "GET Order Service Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:3003/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "3003",
+              "path": ["health"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

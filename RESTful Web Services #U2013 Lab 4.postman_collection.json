@@ -1,0 +1,159 @@
+{
+	"info": {
+		"_postman_id": "lab4-fullstack-client-database-integration",
+		"name": "RESTful Web Services – Lab 4",
+		"description": "Postman Collection for Lab 4 Assignment covering Express.js REST API with MongoDB Atlas persistence, duplicate key validation, invalid ObjectId handling, and complete CRUD operations.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. GET List All Students (200 OK)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/students",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"students"
+					]
+				},
+				"description": "Retrieves list of all student documents persisted in MongoDB (200 OK)"
+			},
+			"response": []
+		},
+		{
+			"name": "2. POST Create Student (201 Created)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Vikramaditya Sengupta\",\n  \"email\": \"vikram@example.com\",\n  \"course\": \"Artificial Intelligence\",\n  \"semester\": 3\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3000/students",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"students"
+					]
+				},
+				"description": "Creates a new student record in MongoDB Atlas (201 Created)"
+			},
+			"response": []
+		},
+		{
+			"name": "3. POST Create Student - Duplicate Email (400 Bad Request)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Another Person\",\n  \"email\": \"aarav@example.com\",\n  \"course\": \"Cyber Security\",\n  \"semester\": 1\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3000/students",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"students"
+					]
+				},
+				"description": "Attempts to create student with an existing unique email, testing MongoDB unique index constraint (400 Bad Request)"
+			},
+			"response": []
+		},
+		{
+			"name": "4. POST Create Student - Invalid Body (400 Bad Request)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"\",\n  \"email\": \"invalid-email-format\",\n  \"course\": \"\",\n  \"semester\": -5\n}"
+				},
+				"url": {
+					"raw": "http://localhost:3000/students",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"students"
+					]
+				},
+				"description": "Submits invalid request payload to test HTTP 400 Bad Request validation error"
+			},
+			"response": []
+		},
+		{
+			"name": "5. GET Student By ID - Invalid Format (400 Bad Request)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/students/invalid-id-string",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"students",
+						"invalid-id-string"
+					]
+				},
+				"description": "Attempts to get student with non-ObjectId string (400 Bad Request)"
+			},
+			"response": []
+		},
+		{
+			"name": "6. GET Student By ID - Non Existent (404 Not Found)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/students/507f1f77bcf86cd799439011",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"students",
+						"507f1f77bcf86cd799439011"
+					]
+				},
+				"description": "Attempts to fetch non-existent valid ObjectId (404 Not Found)"
+			},
+			"response": []
+		}
+	]
+}

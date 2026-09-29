@@ -1,0 +1,362 @@
+{
+	"info": {
+		"_postman_id": "lab3-restful-web-services",
+		"name": "RESTful Web Services – Lab 3",
+		"description": "Postman Collection for Lab 3 Assignment covering Express.js and Spring Boot REST APIs with positive and negative test cases.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Express.js Student API (Port 3000)",
+			"item": [
+				{
+					"name": "GET List All Students",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/students",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"students"
+							]
+						},
+						"description": "Retrieves list of all students (200 OK)"
+					},
+					"response": []
+				},
+				{
+					"name": "GET Student By ID (200 OK)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/students/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"students",
+								"1"
+							]
+						},
+						"description": "Retrieves student with ID 1 (200 OK)"
+					},
+					"response": []
+				},
+				{
+					"name": "GET Student By ID - Negative (404 Not Found)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/students/999",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"students",
+								"999"
+							]
+						},
+						"description": "Attempts to get non-existent student ID 999 (404 Not Found)"
+					},
+					"response": []
+				},
+				{
+					"name": "POST Create Student (201 Created)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Aarav Patel\",\n  \"email\": \"aarav@example.com\",\n  \"course\": \"Computer Science\",\n  \"semester\": 5\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/students",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"students"
+							]
+						},
+						"description": "Creates a new student record (201 Created)"
+					},
+					"response": []
+				},
+				{
+					"name": "POST Create Student - Invalid Body (400 Bad Request)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"\",\n  \"email\": \"invalid-email\",\n  \"semester\": -2\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/students",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"students"
+							]
+						},
+						"description": "Submits invalid request payload to test HTTP 400 Bad Request validation error"
+					},
+					"response": []
+				},
+				{
+					"name": "PUT Update Student (200 OK)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Aarav Patel Updated\",\n  \"email\": \"aarav.updated@example.com\",\n  \"course\": \"Data Science\",\n  \"semester\": 6\n}"
+						},
+						"url": {
+							"raw": "http://localhost:3000/students/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"students",
+								"1"
+							]
+						},
+						"description": "Updates student ID 1 details (200 OK)"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE Student (204 No Content)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:3000/students/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"students",
+								"3"
+							]
+						},
+						"description": "Deletes student ID 3 (204 No Content)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Spring Boot Student API (Port 8080)",
+			"item": [
+				{
+					"name": "GET List All Students",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/students",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"students"
+							]
+						},
+						"description": "Retrieves list of all students from Spring Boot (200 OK)"
+					},
+					"response": []
+				},
+				{
+					"name": "GET Student By ID (200 OK)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/students/1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"students",
+								"1"
+							]
+						},
+						"description": "Retrieves student ID 1 from Spring Boot (200 OK)"
+					},
+					"response": []
+				},
+				{
+					"name": "GET Student By ID - Negative (404 Not Found)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/students/999",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"students",
+								"999"
+							]
+						},
+						"description": "Attempts to get non-existent student ID 999 from Spring Boot (404 Not Found)"
+					},
+					"response": []
+				},
+				{
+					"name": "POST Create Student (201 Created)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Ananya Roy\",\n  \"email\": \"ananya@example.com\",\n  \"course\": \"Cyber Security\",\n  \"semester\": 2\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/students",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"students"
+							]
+						},
+						"description": "Creates student in Spring Boot (201 Created)"
+					},
+					"response": []
+				},
+				{
+					"name": "POST Create Student - Invalid Body (400 Bad Request)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"\",\n  \"email\": \"not-an-email\",\n  \"course\": \"\",\n  \"semester\": 0\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/students",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"students"
+							]
+						},
+						"description": "Triggers Spring Boot @Valid constraint validation failure (400 Bad Request)"
+					},
+					"response": []
+				},
+				{
+					"name": "PUT Update Student (200 OK)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Priya Sharma\",\n  \"email\": \"priya.sharma@example.com\",\n  \"course\": \"Information Technology\",\n  \"semester\": 4\n}"
+						},
+						"url": {
+							"raw": "http://localhost:8080/students/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"students",
+								"2"
+							]
+						},
+						"description": "Updates student ID 2 in Spring Boot (200 OK)"
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE Student (204 No Content)",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/students/3",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"students",
+								"3"
+							]
+						},
+						"description": "Deletes student ID 3 in Spring Boot (204 No Content)"
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

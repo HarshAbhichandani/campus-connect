@@ -1,0 +1,13 @@
+# Dependencies / build caches
+**/node_modules/
+**/.gradle/
+**/.idea/
+
+# Local Android configuration
+**/local.properties
+
+# Secrets
+**/.env
+
+# Logs
+**/*.log

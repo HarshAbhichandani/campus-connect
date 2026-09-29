@@ -1,0 +1,106 @@
+services:
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      USER_SERVICE_URL: http://user-service:3001
+      PRODUCT_SERVICE_URL: http://product-service:3002
+      ORDER_SERVICE_URL: http://order-service:3003
+    depends_on:
+      - user-service
+      - product-service
+      - order-service
+    networks:
+      - campus-network
+    restart: unless-stopped
+
+  user-service:
+    build:
+      context: ./user-service
+    container_name: user-service
+    # Port 3001 internal to network only (not exposed to host per Lab 7 security requirement)
+    environment:
+      PORT: 3001
+      USER_SERVICE_PORT: 3001
+      MONGODB_URI: mongodb://user-db:27017/user_db
+    networks:
+      - campus-network
+    restart: unless-stopped
+
+  product-service:
+    build:
+      context: ./product-service
+    container_name: product-service
+    # Port 3002 internal to network only (not exposed to host per Lab 7 security requirement)
+    environment:
+      PORT: 3002
+      PRODUCT_SERVICE_PORT: 3002
+      MONGODB_URI: mongodb://product-db:27017/product_db
+    networks:
+      - campus-network
+    restart: unless-stopped
+
+  order-service:
+    build:
+      context: ./order-service
+    container_name: order-service
+    # Port 3003 internal to network only (not exposed to host per Lab 7 security requirement)
+    environment:
+      PORT: 3003
+      ORDER_SERVICE_PORT: 3003
+      USER_SERVICE_URL: http://user-service:3001
+      PRODUCT_SERVICE_URL: http://product-service:3002
+      MONGODB_URI: mongodb://order-db:27017/order_db
+    depends_on:
+      - user-service
+      - product-service
+    networks:
+      - campus-network
+    restart: unless-stopped
+
+  user-db:
+    image: mongo:latest
+    container_name: user-db
+    ports:
+      - "27018:27017"
+    volumes:
+      - user-db-data:/data/db
+    networks:
+      - campus-network
+    restart: unless-stopped
+
+  product-db:
+    image: mongo:latest
+    container_name: product-db
+    ports:
+      - "27019:27017"
+    volumes:
+      - product-db-data:/data/db
+    networks:
+      - campus-network
+    restart: unless-stopped
+
+  order-db:
+    image: mongo:latest
+    container_name: order-db
+    ports:
+      - "27020:27017"
+    volumes:
+      - order-db-data:/data/db
+    networks:
+      - campus-network
+    restart: unless-stopped
+
+networks:
+  campus-network:
+    name: campus-network
+    driver: bridge
+
+volumes:
+  user-db-data:
+  product-db-data:
+  order-db-data:
